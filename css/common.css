@@ -1,0 +1,79 @@
+@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+body {
+    font-family: 'Droid Serif';
+}
+
+h1, h2, h3 {
+    font-family: 'Yanone Kaffeesatz';
+    font-weight: normal;
+}
+
+.remark-slide-content li {
+    line-height: 2em;
+}
+.remark-slide-content .condensed li {
+    line-height: 1em;
+}
+
+
+.remark-code, .remark-inline-code {
+    font-family: Inconsolata, 'Ubuntu Mono';
+}
+.remark-code {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+blockquote {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+    margin: 1.5em 0;
+    padding: 1em;
+    quotes: "\201C""\201D""\2018""\2019";
+    position: relative;
+}
+blockquote:before {
+    color: #ccc;
+    position: absolute;
+    content: open-quote;
+    font-size: 6em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
+}
+
+.col {
+    box-sizing: border-box;
+    display: block;
+    float: left;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    width: 50%;
+}
+.col:nth-of-type(odd) {
+    padding: 0 1em 0 0;
+}
+.col:nth-of-type(even) {
+    padding: 0 0 0 1em;
+}
+.col.sep:nth-of-type(odd) {
+    border-right: 1px solid #ccc;
+}
+.col.sep:nth-of-type(even) {
+    border-left: 1px solid #ccc;
+}
+
+.top-right {
+    float: right;
+    margin: 50px 0 0 2em;
+}
+
+.highlight {
+    color: #7d9726;
+}
+

@@ -1,0 +1,61 @@
+
+.basic-flow {
+    line-height: 200px;
+    height: 200px;
+}
+.basic-flow img {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+}
+
+/* fix overzealous syntax highlighter */
+.http .hljs-selector-tag,
+.http .hljs-selector-class {
+    font-weight: normal;
+    color: inherit;
+}
+
+.cgi .remark-code {
+    font-size: 22px;
+}
+
+.fastcgi .remark-code {
+    font-size: 22px;
+}
+
+.mod_perl .remark-code {
+    font-size: 20px;
+}
+
+.psgi .remark-code {
+    font-size: 22px;
+}
+
+/* fix non-collapsing margin */
+.psgi pre {
+    margin-bottom: 0;
+}
+
+.plackup .remark-code {
+    font-size: 24px;
+}
+
+.app-psgi .remark-code {
+    font-size: 22px;
+}
+
+.env .condensed li {
+    line-height: 1.4em;
+}
+
+.middleware .remark-code {
+    font-size: 22px;
+}
+
+#slide-theend .talkqr img {
+    display: inline-block;
+    width: 230px;
+    height: 230px;
+}
+

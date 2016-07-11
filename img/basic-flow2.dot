@@ -1,0 +1,27 @@
+
+digraph G
+{
+    rankdir = LR
+
+    node
+    [
+        fontname    = "Inconsolata"
+        fontsize    = 22
+        shape       = record
+        style       = rounded
+    ]
+
+    edge
+    [
+        fontname    = "Inconsolata"
+        fontsize    = 20
+        arrowhead   = vee
+        arrowtail   = vee
+    ]
+
+    "user\nagents"  -> "web\nserver"    [label="HTTP",dir=both]
+    "web\nserver"   -> "your\napp"      [label="PSGI",dir=both,fontcolor=blue,fontsize=30]
+
+    "web\nserver" [style="rounded,filled",fillcolor="#FFFF88"]
+}
+

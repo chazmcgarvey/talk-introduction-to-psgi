@@ -1,0 +1,18 @@
+If you write web apps in Perl (perhaps using Catalyst, Mojolicious, Dancer, or
+one of the other great web frameworks), you are probably already using PSGI,
+but do you understand how it works and why PSGI is so amazing? You should! If
+you still write web apps using CGI, then there are many reasons why you should
+create your next project using a PSGI-compatible web framework.
+
+PSGI is a specification, like CGI, that describes how web apps and web servers
+can communicate. It stands for Perl web Server Gateway Interface, and the
+first version of the specification was published to the CPAN on Oct 13, 2009.
+
+This talk will go over:
+* what PSGI is and how it works,
+* how it differs and is better than CGI,
+* what makes it so cool,
+* and how you can use it to do awesome things.
+
+You'll get the most out of this talk if you already know Perl and use it to
+build web applications.

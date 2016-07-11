@@ -1,0 +1,38 @@
+
+digraph G
+{
+    rankdir = LR
+    
+    node
+    [
+        fontname    = "Inconsolata"
+        fontsize    = 22
+        shape       = record
+        style       = rounded
+    ]
+
+    edge
+    [
+        fontname    = "Inconsolata"
+        fontsize    = 20
+        arrowhead   = vee
+        arrowtail   = vee
+    ]
+
+    "user\nagents"      -> "web\nserver"    [label="HTTP",dir=both]
+    "web\nserver"       -> "PSGI\nhandler"  [label="CGI, mod_perl,\nFastCGI, HTTP",dir=both]
+    "PSGI\nhandler"     -> "web\nframework" [label="PSGI",dir=both,fontcolor=blue,fontsize=30]
+    "web\nframework"    -> "your\napp"      [label="???",dir=both]
+
+    "web\nframework" [style="rounded,filled",fillcolor="#FFFF88"]
+
+    subgraph cluster_devops {
+        fontname    = "Inconsolata"
+        fontsize    = 30
+        label       = "DevOps"
+
+        "web\nserver"
+        "PSGI\nhandler"
+    }
+}
+
