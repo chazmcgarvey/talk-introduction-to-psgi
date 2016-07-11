@@ -1338,6 +1338,16 @@ layout: true
 
 ---
 
+name:   middleware-debug
+
+### [`Debug`](https://metacpan.org/pod/Plack::Middleware::Debug)
+
+```perl
+enable 'Debug';
+```
+
+---
+
 ### [`ReverseProxy`](https://metacpan.org/pod/Plack::Middleware::ReverseProxy)
 
 ```perl
@@ -1418,6 +1428,7 @@ layout: false
   - Logging
   - Error handling
   - Sessions
+  - Rate limiters
 
 --
 - PSGI also specifies a way to delay or stream responses to the server.
@@ -1472,5 +1483,5 @@ Leave me feedback, if you want:
 ]
 ]
 
-</textarea><script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script><script>remark.create({countIncrementalSlides: true, highlightLanguage: 'perl', highlightLines: true, ratio: '16:9', /*slideNumberFormat: '',*/ navigation: {scroll: false, touch: false, click: false}})</script></body></html>
+</textarea><script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script><script>var slideshow = remark.create({countIncrementalSlides: true, highlightLanguage: 'perl', highlightLines: true, ratio: '16:9', /*slideNumberFormat: '',*/ navigation: {scroll: false, touch: false, click: false}})</script></body></html>
 <!-- vim: set ts=4 sts=4 sw=4 tw=120 et ft=markdown nowrap: -->

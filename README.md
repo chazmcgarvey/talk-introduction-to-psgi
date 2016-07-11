@@ -12,6 +12,10 @@ To view the slides:
 
     make run
 
+To build slides and run as a PSGI app:
+
+    make run-app
+
 To build a PDF version of the slides:
 
     make pdf

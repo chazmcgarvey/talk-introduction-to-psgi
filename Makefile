@@ -2,6 +2,7 @@
 SLIDES  = introduction-to-psgi
 BROWSER = chrome
 DOT     = dot
+PLACKUP = plackup
 
 dotfiles = $(shell find . -iname '*.dot')
 svgfiles = $(patsubst %.dot,%.svg,$(dotfiles))
@@ -17,6 +18,9 @@ pdf: $(SLIDES).pdf
 
 run: $(svgfiles)
 	$(BROWSER) slides.html
+
+run-app: offline
+	$(PLACKUP)
 
 run-offline: offline
 	$(BROWSER) slides-offline.html
@@ -34,5 +38,5 @@ slides-offline.html: slides.html
 remark.min.js:
 	curl -Lo $@ https://gnab.github.io/remark/downloads/remark-latest.min.js
 
-.PHONY: all clean offline pdf run run-offline
+.PHONY: all clean offline pdf run run-app run-offline
 
