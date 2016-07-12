@@ -198,7 +198,7 @@ If you're a developer writing a web app, you're probably asking why then you sho
 - New skills make you more marketable.
 
 --
-- So that you it when you see PSGI exposed through your web framework.
+- So that you understand it when you see PSGI exposed through your web framework.
 
 --
 - You can do cool things with PSGI!
@@ -241,7 +241,7 @@ RFC 2616 was then superceded in 2014 by:
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -253,7 +253,7 @@ Connection: Keep-Alive
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -270,7 +270,7 @@ Your IP address is 127.0.0.1.
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -282,7 +282,7 @@ Connection: Keep-Alive
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -307,7 +307,7 @@ Your IP address is 127.0.0.1.
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -319,7 +319,7 @@ GET /ip HTTP/1.1
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -341,7 +341,7 @@ Your IP address is 127.0.0.1.
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -353,7 +353,7 @@ Connection: Keep-Alive
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -376,7 +376,7 @@ Your IP address is 127.0.0.1.
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -388,7 +388,7 @@ Connection: Keep-Alive
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -415,7 +415,7 @@ Your IP address is 127.0.0.1.
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -427,7 +427,7 @@ Connection: Keep-Alive
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -455,7 +455,7 @@ Your IP address is 127.0.0.1.
 
 ---
 
-.col[
+.col.marginfix[
 ### Request
 
 ```http
@@ -467,7 +467,7 @@ Connection: Keep-Alive
 ```
 ]
 
-.col[
+.col.marginfix[
 ### Response
 
 ```http
@@ -579,7 +579,7 @@ print "Your IP address is ${client_ip}.";
 
 1. Gateway sets information about the request in the environment.
 
-.condensed[
+.condensed.marginfix[
 .col[
 - `AUTH_TYPE`
 - `CONTENT_LENGTH`
@@ -604,6 +604,9 @@ print "Your IP address is ${client_ip}.";
 ]
 ]
 
+???
+- If you've done some web programming before, you're probably familiar with at least a few of these.
+
 ---
 
 ```perl
@@ -619,7 +622,7 @@ print "Your IP address is ${client_ip}.";
 1. Gateway sets information about the request in the environment.
 2. Print response headers to `STDOUT`.
 
-.condensed[
+.condensed.marginfix[
 .col[
 - `Content-Type`
 - `Location`
@@ -1050,6 +1053,8 @@ layout: false
 
 ---
 
+class: plack
+
 ## Plack
 
 - Provides tools for building, running, and testing PSGI apps.
@@ -1196,7 +1201,7 @@ layout: true
 
 ---
 
-.condensed[
+.condensed.marginfix[
 .col[
 - `HTTP_ACCEPT`
 - `HTTP_ACCEPT_ENCODING`
@@ -1235,7 +1240,7 @@ layout: true
 
 ---
 
-.condensed[
+.condensed.marginfix[
 .col[
 - .highlight[`HTTP_ACCEPT`]
 - .highlight[`HTTP_ACCEPT_ENCODING`]
@@ -1274,7 +1279,7 @@ layout: true
 
 ---
 
-.condensed[
+.condensed.marginfix[
 .col[
 - `HTTP_ACCEPT`
 - `HTTP_ACCEPT_ENCODING`
@@ -1466,7 +1471,6 @@ name:   last
 ## Thank you
 
 Email me: Charles McGarvey
-<cmcgarvey@bluehost.com>
 <chazmcgarvey@brokenzipper.com>
 
 .talkqr.center[
