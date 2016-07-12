@@ -1,14 +1,22 @@
-@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
-@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+@import url(https://fonts.googleapis.com/css?family=Muli);
+@import url(https://fonts.googleapis.com/css?family=Inconsolata);
 
 body {
-    font-family: 'Droid Serif';
+    font-family: 'Open Sans';
 }
 
-h1, h2, h3 {
-    font-family: 'Yanone Kaffeesatz';
+.remark-slide-content h1,
+.remark-slide-content h2,
+.remark-slide-content h3 {
+    font-family: Muli;
     font-weight: normal;
+}
+.remark-slide-content h2 {
+    font-size: 40px;
+}
+.remark-slide-content h3 {
+    font-size: 30px;
 }
 
 .remark-slide-content li {
@@ -20,7 +28,7 @@ h1, h2, h3 {
 
 
 .remark-code, .remark-inline-code {
-    font-family: Inconsolata, 'Ubuntu Mono';
+    font-family: Inconsolata, monospace;
 }
 .remark-code {
     border-radius: 5px;
