@@ -1041,6 +1041,133 @@ my $app = sub {
 
 ---
 
+class:  env
+layout: true
+
+## PSGI Environment
+
+---
+
+.condensed.marginfix[
+.col[
+- `HTTP_ACCEPT`
+- `HTTP_ACCEPT_ENCODING`
+- `HTTP_ACCEPT_LANGUAGE`
+- `HTTP_CACHE_CONTROL`
+- `HTTP_CONNECTION`
+- `HTTP_DNT`
+- `HTTP_HOST`
+- `HTTP_USER_AGENT`
+- `PATH_INFO`
+- `QUERY_STRING `
+- `REMOTE_ADDR`
+- `REMOTE_PORT`
+- `REQUEST_METHOD`
+- `REQUEST_URI`
+- `SCRIPT_NAME`
+]
+.col[
+- `SERVER_NAME`
+- `SERVER_PORT`
+- `SERVER_PROTOCOL`
+- `psgi.errors`
+- `psgi.input`
+- `psgi.multiprocess`
+- `psgi.multithread`
+- `psgi.nonblocking`
+- `psgi.run_once`
+- `psgi.streaming`
+- `psgi.url_scheme`
+- `psgi.version`
+- `psgix.harakiri`
+- `psgix.input.buffered`
+- `psgix.io`
+]
+]
+
+---
+
+.condensed.marginfix[
+.col[
+- .highlight[`HTTP_ACCEPT`]
+- .highlight[`HTTP_ACCEPT_ENCODING`]
+- .highlight[`HTTP_ACCEPT_LANGUAGE`]
+- .highlight[`HTTP_CACHE_CONTROL`]
+- .highlight[`HTTP_CONNECTION`]
+- .highlight[`HTTP_DNT`]
+- .highlight[`HTTP_HOST`]
+- .highlight[`HTTP_USER_AGENT`]
+- .highlight[`PATH_INFO`]
+- .highlight[`QUERY_STRING `]
+- .highlight[`REMOTE_ADDR`]
+- .highlight[`REMOTE_PORT`]
+- .highlight[`REQUEST_METHOD`]
+- .highlight[`REQUEST_URI`]
+- .highlight[`SCRIPT_NAME`]
+]
+.col[
+- .highlight[`SERVER_NAME`]
+- .highlight[`SERVER_PORT`]
+- .highlight[`SERVER_PROTOCOL`]
+- `psgi.errors`
+- `psgi.input`
+- `psgi.multiprocess`
+- `psgi.multithread`
+- `psgi.nonblocking`
+- `psgi.run_once`
+- `psgi.streaming`
+- `psgi.url_scheme`
+- `psgi.version`
+- `psgix.harakiri`
+- `psgix.input.buffered`
+- `psgix.io`
+]
+]
+
+---
+
+.condensed.marginfix[
+.col[
+- `HTTP_ACCEPT`
+- `HTTP_ACCEPT_ENCODING`
+- `HTTP_ACCEPT_LANGUAGE`
+- `HTTP_CACHE_CONTROL`
+- `HTTP_CONNECTION`
+- `HTTP_DNT`
+- `HTTP_HOST`
+- `HTTP_USER_AGENT`
+- `PATH_INFO`
+- `QUERY_STRING `
+- `REMOTE_ADDR`
+- `REMOTE_PORT`
+- `REQUEST_METHOD`
+- `REQUEST_URI`
+- `SCRIPT_NAME`
+]
+.col[
+- `SERVER_NAME`
+- `SERVER_PORT`
+- `SERVER_PROTOCOL`
+- .highlight[`psgi.errors`]
+- .highlight[`psgi.input`]
+- .highlight[`psgi.multiprocess`]
+- .highlight[`psgi.multithread`]
+- .highlight[`psgi.nonblocking`]
+- .highlight[`psgi.run_once`]
+- .highlight[`psgi.streaming`]
+- .highlight[`psgi.url_scheme`]
+- .highlight[`psgi.version`]
+- .highlight[`psgix.harakiri`]
+- .highlight[`psgix.input.buffered`]
+- .highlight[`psgix.io`]
+]
+]
+
+???
+- Harakiri is a form of Japanese ritual suicide by disembowelment.
+
+---
+
 layout: false
 
 ## Benefits of PSGI
@@ -1227,130 +1354,6 @@ my $app = sub {
 
 ---
 
-class:  env
-layout: true
-
-## Plack `$env`
-
----
-
-.condensed.marginfix[
-.col[
-- `HTTP_ACCEPT`
-- `HTTP_ACCEPT_ENCODING`
-- `HTTP_ACCEPT_LANGUAGE`
-- `HTTP_CACHE_CONTROL`
-- `HTTP_CONNECTION`
-- `HTTP_DNT`
-- `HTTP_HOST`
-- `HTTP_USER_AGENT`
-- `PATH_INFO`
-- `QUERY_STRING `
-- `REMOTE_ADDR`
-- `REMOTE_PORT`
-- `REQUEST_METHOD`
-- `REQUEST_URI`
-- `SCRIPT_NAME`
-]
-.col[
-- `SERVER_NAME`
-- `SERVER_PORT`
-- `SERVER_PROTOCOL`
-- `psgi.errors`
-- `psgi.input`
-- `psgi.multiprocess`
-- `psgi.multithread`
-- `psgi.nonblocking`
-- `psgi.run_once`
-- `psgi.streaming`
-- `psgi.url_scheme`
-- `psgi.version`
-- `psgix.harakiri`
-- `psgix.input.buffered`
-- `psgix.io`
-]
-]
-
----
-
-.condensed.marginfix[
-.col[
-- .highlight[`HTTP_ACCEPT`]
-- .highlight[`HTTP_ACCEPT_ENCODING`]
-- .highlight[`HTTP_ACCEPT_LANGUAGE`]
-- .highlight[`HTTP_CACHE_CONTROL`]
-- .highlight[`HTTP_CONNECTION`]
-- .highlight[`HTTP_DNT`]
-- .highlight[`HTTP_HOST`]
-- .highlight[`HTTP_USER_AGENT`]
-- .highlight[`PATH_INFO`]
-- .highlight[`QUERY_STRING `]
-- .highlight[`REMOTE_ADDR`]
-- .highlight[`REMOTE_PORT`]
-- .highlight[`REQUEST_METHOD`]
-- .highlight[`REQUEST_URI`]
-- .highlight[`SCRIPT_NAME`]
-]
-.col[
-- .highlight[`SERVER_NAME`]
-- .highlight[`SERVER_PORT`]
-- .highlight[`SERVER_PROTOCOL`]
-- `psgi.errors`
-- `psgi.input`
-- `psgi.multiprocess`
-- `psgi.multithread`
-- `psgi.nonblocking`
-- `psgi.run_once`
-- `psgi.streaming`
-- `psgi.url_scheme`
-- `psgi.version`
-- `psgix.harakiri`
-- `psgix.input.buffered`
-- `psgix.io`
-]
-]
-
----
-
-.condensed.marginfix[
-.col[
-- `HTTP_ACCEPT`
-- `HTTP_ACCEPT_ENCODING`
-- `HTTP_ACCEPT_LANGUAGE`
-- `HTTP_CACHE_CONTROL`
-- `HTTP_CONNECTION`
-- `HTTP_DNT`
-- `HTTP_HOST`
-- `HTTP_USER_AGENT`
-- `PATH_INFO`
-- `QUERY_STRING `
-- `REMOTE_ADDR`
-- `REMOTE_PORT`
-- `REQUEST_METHOD`
-- `REQUEST_URI`
-- `SCRIPT_NAME`
-]
-.col[
-- `SERVER_NAME`
-- `SERVER_PORT`
-- `SERVER_PROTOCOL`
-- .highlight[`psgi.errors`]
-- .highlight[`psgi.input`]
-- .highlight[`psgi.multiprocess`]
-- .highlight[`psgi.multithread`]
-- .highlight[`psgi.nonblocking`]
-- .highlight[`psgi.run_once`]
-- .highlight[`psgi.streaming`]
-- .highlight[`psgi.url_scheme`]
-- .highlight[`psgi.version`]
-- .highlight[`psgix.harakiri`]
-- .highlight[`psgix.input.buffered`]
-- .highlight[`psgix.io`]
-]
-]
-
----
-
 layout: false
 
 ## Plack Handlers
@@ -1434,6 +1437,9 @@ enable 'RedirectSSL';
 
 - Redirects from http to https (or backwards, if configured).
 - Can also set HSTS header with configurable `max-age`. 
+
+???
+- HSTS = HTTP Strict Transport Security
 
 ---
 
