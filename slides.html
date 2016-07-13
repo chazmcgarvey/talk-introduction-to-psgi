@@ -63,7 +63,8 @@ Despite Perl's long history of powering the web, we were well behind the curve o
 
 ---
 
-class: center, middle
+class:  center, middle
+name:   psgi-flow1
 
 ## Extremely High-level Overview
 
@@ -78,7 +79,8 @@ class: center, middle
 
 ---
 
-class: center, middle
+class:  center, middle
+name:   psgi-flow2
 
 ## Pretty High-level Overview
 
@@ -92,7 +94,8 @@ class: center, middle
 
 ---
 
-class: center, middle
+class:  center, middle
+name:   psgi-flow3
 
 ## Somewhat High-level Overview
 
@@ -117,7 +120,8 @@ class: center, middle
 
 ---
 
-class: center, middle
+class:  center, middle
+name:   psgi-flow4
 
 ## Somewhat High-level Overview
 
@@ -139,7 +143,8 @@ class: center, middle
 
 ---
 
-class: center, middle
+class:  center, middle
+name:   psgi-flow5
 
 ## High-level Overview
 
@@ -149,7 +154,6 @@ class: center, middle
 
 ???
 - A web framework makes it so your app doesn't need to speak HTTP or CGI or even PSGI.
-  - 
 
 ---
 
@@ -224,6 +228,10 @@ layout: true
 --
 - The IETF and W3C took over standards development, resulting in [RFC 1945](https://tools.ietf.org/html/rfc1945) ("HTTP 1.0") in 1996.
 
+???
+- IETF = Internet Engineering Task Force
+- W3C = World Wide Web Consortium
+
 --
 - [RFC 2068](https://tools.ietf.org/html/rfc2068) ("HTTP 1.1") happened in 1997, superceded by [RFC 2616](https://tools.ietf.org/html/rfc2616) in 1999.
 
@@ -247,7 +255,7 @@ RFC 2616 was then superceded in 2014 by:
 ```http
 GET /ip HTTP/1.1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-Host: foo.acme.tld
+Host: localhost
 Accept-Language: en-us
 Connection: Keep-Alive
 ```
@@ -260,7 +268,7 @@ Connection: Keep-Alive
 HTTP/1.1 200 OK
 Date: Thu, 07 Jul 2016 11:56:23 GMT
 Server: nginx
-Content-Length: 30
+Content-Length: 29
 Content-Type: text/plain
 Connection: Closed
 
@@ -276,7 +284,7 @@ Your IP address is 127.0.0.1.
 ```http
 *GET /ip HTTP/1.1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-Host: foo.acme.tld
+Host: localhost
 Accept-Language: en-us
 Connection: Keep-Alive
 ```
@@ -289,7 +297,7 @@ Connection: Keep-Alive
 HTTP/1.1 200 OK
 Date: Thu, 07 Jul 2016 11:56:23 GMT
 Server: nginx
-Content-Length: 30
+Content-Length: 29
 Content-Type: text/plain
 Connection: Closed
 
@@ -313,7 +321,7 @@ Your IP address is 127.0.0.1.
 ```http
 GET /ip HTTP/1.1
 *User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-*Host: foo.acme.tld
+*Host: localhost
 *Accept-Language: en-us
 *Connection: Keep-Alive
 ```
@@ -326,7 +334,7 @@ GET /ip HTTP/1.1
 HTTP/1.1 200 OK
 Date: Thu, 07 Jul 2016 11:56:23 GMT
 Server: nginx
-Content-Length: 30
+Content-Length: 29
 Content-Type: text/plain
 Connection: Closed
 
@@ -347,7 +355,7 @@ Your IP address is 127.0.0.1.
 ```http
 GET /ip HTTP/1.1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-Host: foo.acme.tld
+Host: localhost
 Accept-Language: en-us
 Connection: Keep-Alive
 ```
@@ -360,7 +368,7 @@ Connection: Keep-Alive
 HTTP/1.1 200 OK
 Date: Thu, 07 Jul 2016 11:56:23 GMT
 Server: nginx
-Content-Length: 30
+Content-Length: 29
 Content-Type: text/plain
 Connection: Closed
 
@@ -382,7 +390,7 @@ Your IP address is 127.0.0.1.
 ```http
 GET /ip HTTP/1.1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-Host: foo.acme.tld
+Host: localhost
 Accept-Language: en-us
 Connection: Keep-Alive
 ```
@@ -395,7 +403,7 @@ Connection: Keep-Alive
 *HTTP/1.1 200 OK
 Date: Thu, 07 Jul 2016 11:56:23 GMT
 Server: nginx
-Content-Length: 30
+Content-Length: 29
 Content-Type: text/plain
 Connection: Closed
 
@@ -421,7 +429,7 @@ Your IP address is 127.0.0.1.
 ```http
 GET /ip HTTP/1.1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-Host: foo.acme.tld
+Host: localhost
 Accept-Language: en-us
 Connection: Keep-Alive
 ```
@@ -434,7 +442,7 @@ Connection: Keep-Alive
 HTTP/1.1 200 OK
 *Date: Thu, 07 Jul 2016 11:56:23 GMT
 *Server: nginx
-*Content-Length: 30
+*Content-Length: 29
 *Content-Type: text/plain
 *Connection: Closed
 
@@ -461,7 +469,7 @@ Your IP address is 127.0.0.1.
 ```http
 GET /ip HTTP/1.1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
-Host: foo.acme.tld
+Host: localhost
 Accept-Language: en-us
 Connection: Keep-Alive
 ```
@@ -474,7 +482,7 @@ Connection: Keep-Alive
 HTTP/1.1 200 OK
 Date: Thu, 07 Jul 2016 11:56:23 GMT
 Server: nginx
-Content-Length: 30
+Content-Length: 29
 Content-Type: text/plain
 Connection: Closed
 
@@ -605,6 +613,8 @@ print "Your IP address is ${client_ip}.";
 ]
 
 ???
+- In Perl, you can get these using %ENV.
+- Or getenv from stdlib.
 - If you've done some web programming before, you're probably familiar with at least a few of these.
 
 ---
@@ -687,10 +697,11 @@ print "Your IP address is ${client_ip}.";
   producing correctly-formatted headers, and even producing HTML.
 - CGI.pm was deprecated in perl 5.20 and remove from core in perl 5.22.
 
-TODO make a slide for this
 Good:
 - Conceptually simple.
 - Only requires the use of the most basic and primitive program constructs (stdin, stdout, env).
+- Only other primitive construct that could have been used is that of passing program arguments.
+  - Actually, the spec does specify behavior for "search-strings" as program arguments.
 
 Bad:
 - Details can get complicated.
@@ -835,6 +846,7 @@ layout: true
 
 ???
 - Unlike the interfaces we have examined so far, mod_perl is code.
+- About the same time as FastCGI.
 
 --
 - Became an Apache Software Foundation project at ApacheCon 1999 in Orlando.
@@ -861,13 +873,16 @@ sub handler {
 ```
 
 ???
-- There's a separate mod_perl for nginx.
+- Notice how we're not using STDOUT (or even pretending to).
+- This program actually runs on a perl interpreter inside the web server.
+- It also has access to more information through the exposed API.
 
 Good:
 - Can run CGI programs as-is.
 
 Bad:
 - Can tie you to specific web servers.
+  - There's a separate mod_perl for nginx.
 - Code runs in the same process as the HTTP server -- kinda scary.
 - Using Apache's API feels heavy.
 
@@ -893,6 +908,17 @@ my $app = sub {
 };
 ```
 
+???
+- I think it's good to understand CGI et al. so that you can understand why it was designed the way
+  it was.
+- Hopefully the ideas behind PSGI are based off of the best that CGI et al. had to offer without any
+  of the drawbacks.
+
+
+- Notice how the program is a subroutine.
+- By being a subrouting rather than a script that is executed, we're already in a form that can be
+  called repeatedly without incurring fork-exec overhead. Nice!
+
 ---
 
 ```perl
@@ -913,6 +939,10 @@ my $app = sub {
 
 1. Hashref of request information.
 ]
+
+???
+- Oh, look! The variable is the same as is specified by CGI.
+  - Why throw away over a decade of convention?
 
 ---
 
@@ -940,6 +970,9 @@ my $app = sub {
 
 1. HTTP status code.
 ]
+
+???
+- Then you'll notice that instead of printing anything, we return an arrayref as the response.
 
 ---
 
@@ -1490,5 +1523,5 @@ Leave me feedback, if you want:
 ]
 ]
 
-</textarea><script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script><script>var slideshow = remark.create({countIncrementalSlides: true, highlightLanguage: 'perl', highlightLines: true, ratio: '16:9', /*slideNumberFormat: '',*/ navigation: {scroll: false, touch: false, click: false}})</script></body></html>
+</textarea><script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script><script>var slideshow = remark.create({countIncrementalSlides: true, highlightLanguage: 'perl', highlightLines: true, ratio: '16:9', /*slideNumberFormat: '',*/ navigation: {scroll: false, touch: false, click: false}})</script><script src="js/common.js"></script><script src="js/slides.js"></script></body></html>
 <!-- vim: set ts=4 sts=4 sw=4 tw=120 et ft=markdown nowrap: -->
