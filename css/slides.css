@@ -53,6 +53,10 @@
     font-size: 22px;
 }
 
+#slide-perl-code .remark-code {
+    font-size: 26px;
+}
+
 #slide-last .talkqr img {
     display: inline-block;
     width: 230px;
