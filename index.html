@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<!-- This file is auto-generated - DO NOT EDIT!!! -->
+<html><head><meta charset="utf-8"><title>Introduction to PSGI</title><link rel="stylesheet" href="css/common.css"><link rel="stylesheet" href="css/slides.css"></head><body><textarea id="source">
+
+class:  center, middle
+name:   title
+
+# Introduction to PSGI
+
+Charles McGarvey
+
+---
+
+class:  center, middle
+name:   bluehost
+
+![Bluehost](img/bluehost.png)
+
+### https://bluehost.com/careers
+
+---
+
+class:  center, middle
+name:   perl-code
+
+```perl
+@P=split//,".URRUU\c8R";@d=split//,"\nrekcah xinU / lreP rehtona tsuJ";sub p{
+@p{"r$p","u$p"}=(P,P);pipe"r$p","u$p";++$p;($q*=2)+=$f=!fork;map{$P=$P[$f^ord
+($p{$_})&6];$p{$_}=/ ^$P/ix?$P:close$_}keys%p}p;p;p;p;p;map{$p{$_}=~/^[P.]/&&
+close$_}%p;wait until$?;map{/^r/&&<$_>}%p;$_=$d[$q];sleep rand(2)if/\S/;print
+```
+
+Source: [Just Another Perl / Unix Hacker](http://perl.plover.com/obfuscated/) by Mark Jason Dominus
+
+???
+This is a Perl presentation, so I hope code that looks like this doesn't frighten you.
+
+---
+
+## Agenda
+
+- Answer "What is PSGI?"
+- Examine some alternatives to PSGI.
+- Examine PSGI.
+- Examine Plack.
+
+---
+
+## What is PSGI?
+
+### **P**erl [web] **S**erver **G**ateway **I**nterface
+
+--
+- It is an interface between Perl web applications and web servers.
+
+--
+- It is a *specification*, not code.
+
+--
+- First released to the CPAN on 13 Oct 2009.
+
+--
+- Originally written by Miyagawa.
+
+.center[![Tatsuhiko Miyagawa](img/avatar-miyagawa.jpg)]
+
+???
+Written by **Tatsuhiko Miyagawa**, author of:
+- cpanm
+- carton
+- way too many Perl modules on CPAN to list
+
+--
+- Inspired by WSGI (Python) and Rack (Ruby).
+
+???
+- PEP-333 (WSGI 1.0) was released on 07 Dec 2003.
+- Rack 0.1 was released on 03 Mar 2007.
+
+Despite Perl's long history of powering the web, we were well behind the curve on this.
+
+---
+
+class:  center, middle
+name:   psgi-flow1
+
+## Extremely High-level Overview
+
+.basic-flow[
+![Basic Flow](img/basic-flow1.svg)
+]
+
+???
+- PSGI is the language your app speaks in order to communicate with user agents.
+  - User agents are browsers.
+- I've glossed over some important details, like the fact that users don't speak PSGI.
+
+---
+
+class:  center, middle
+name:   psgi-flow2
+
+## Pretty High-level Overview
+
+.basic-flow[
+![Basic Flow](img/basic-flow2.svg)
+]
+
+???
+- In reality, your app speaks PSGI but user agents speak HTTP.
+- You need software in the middle that can speak both, and that's usually a web server.
+
+---
+
+class:  center, middle
+name:   psgi-flow3
+
+## Somewhat High-level Overview
+
+.basic-flow[
+![Basic Flow](img/basic-flow3.svg)
+]
+
+???
+- In reality, most web servers don't speak PSGI. :-(
+- There are "handlers" that speak both PSGI and another language that web servers do speak.
+  - CGI
+  - mod_perl
+  - FastCGI
+  - **HTTP**
+- Yes, HTTP. Many modern web servers speak HTTP not only as a server but also as a client.
+  - This allows them to *proxy* (act as middleman) between user agents and other servers.
+- In the world of PSGI (and "Plack"), handlers are also called adapters or connectors.
+- There are already adapters for every major web server.
+  - Apache
+  - nginx
+  - IIS
+
+---
+
+class:  center, middle
+name:   psgi-flow4
+
+## Somewhat High-level Overview
+
+.basic-flow[
+![Basic Flow](img/basic-flow4.svg)
+]
+
+???
+- Notice that as we've zoomed in, the interaction between the web app and the rest has remained the
+  same: PSGI.
+  - From a developer perspective, the etremely high-level overview is sufficient.
+  - This is one of the benefits of PSGI:
+    - Write your application once and leave deployment details to devops.
+    - The intrastructure details can change (swap in a different web server) and the app will still work.
+    - Maybe you're both developer and system architect, but the separation between developer and
+      devops is valuable.
+  - In fairness, this isn't a new concept.
+    - The way this has been achieved before is using a *web framework*.
+
+---
+
+class:  center, middle
+name:   psgi-flow5
+
+## High-level Overview
+
+.basic-flow[
+![Basic Flow](img/basic-flow5.svg)
+]
+
+???
+- A web framework makes it so your app doesn't need to speak HTTP or CGI or even PSGI.
+
+---
+
+class: middle
+
+## Word of Caution
+
+> Writing your web application directly using [PSGI/Plack] is certainly possible but not recommended.
+>
+> […]
+> 
+> If you're writing a web application, not a framework, then you're encouraged to use one of the web
+> application frameworks that support PSGI (http://plackperl.org/#frameworks), or see modules like
+> HTTP::Engine to provide higher level Request and Response API on top of PSGI.
+> 
+> -- [Plack::Request Documentation](https://search.cpan.org/~miyagawa/Plack/lib/Plack/Request.pm)
+
+???
+- When you start learning about Plack, you'll realize that it is actually pretty capable.
+  - You may start to think that everything should be developed on that level -- don't do it!
+- For most stuff, you'll still want to use a web framework.
+- Web frameworks often offer more convenient abstractions than raw PSGI.
+
+---
+
+## Why care?
+
+???
+If you're a developer writing a web app, you're probably asking why then you should care about PSGI.
+
+--
+
+- So that you can understand how things work.
+
+???
+- I'll never understood people who don't want to understand things.
+- Knowledge is cool!
+- I recommend you learn and understand as much as you can about the entire request-response cycle of
+  your web app; it will help you troubleshoot when things go wrong or aren't behaving as expected.
+- Be an expert!
+
+--
+- So that you can do DevOps (if you want).
+
+???
+- New skills make you more marketable.
+
+--
+- So that you understand it when you see PSGI exposed through your web framework.
+
+--
+- You can do cool things with PSGI!
+
+???
+- Even if you do most of your work using your framework, you can do some useful things with PSGI.
+- We will get to some of those cool things, so hang tight.
+
+---
+
+class:  http
+layout: true
+
+## HTTP
+
+---
+
+### **H**yper**t**ext **T**ransfer **P**rotocol
+
+--
+- Invented by Tim Berners-Lee in 1989, first specified as [HTTP 0.9](https://www.w3.org/Protocols/HTTP/AsImplemented.html) in 1991.
+
+--
+- The IETF and W3C took over standards development, resulting in [RFC 1945](https://tools.ietf.org/html/rfc1945) ("HTTP 1.0") in 1996.
+
+???
+- IETF = Internet Engineering Task Force
+- W3C = World Wide Web Consortium
+
+--
+- [RFC 2068](https://tools.ietf.org/html/rfc2068) ("HTTP 1.1") happened in 1997, superceded by [RFC 2616](https://tools.ietf.org/html/rfc2616) in 1999.
+
+???
+RFC 2616 was then superceded in 2014 by:
+- [RFC 7230](https://tools.ietf.org/html/rfc7230)
+- [RFC 7231](https://tools.ietf.org/html/rfc7231)
+- [RFC 7232](https://tools.ietf.org/html/rfc7232)
+- [RFC 7233](https://tools.ietf.org/html/rfc7233)
+- [RFC 7234](https://tools.ietf.org/html/rfc7234)
+- [RFC 7235](https://tools.ietf.org/html/rfc7235)
+
+--
+- Oh yeah, and HTTP2 came out in 2015, defined in [RFC 7540](https://tools.ietf.org/html/rfc7540).
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+GET /ip HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Host: localhost
+Accept-Language: en-us
+Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+HTTP/1.1 200 OK
+Date: Thu, 07 Jul 2016 11:56:23 GMT
+Server: nginx
+Content-Length: 29
+Content-Type: text/plain
+Connection: Closed
+
+Your IP address is 127.0.0.1.
+```
+]
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+*GET /ip HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Host: localhost
+Accept-Language: en-us
+Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+HTTP/1.1 200 OK
+Date: Thu, 07 Jul 2016 11:56:23 GMT
+Server: nginx
+Content-Length: 29
+Content-Type: text/plain
+Connection: Closed
+
+Your IP address is 127.0.0.1.
+```
+]
+
+.col[
+1. Method, path, protocol/version
+]
+
+???
+- Methods defined in HTTP/1.1: GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT
+- RFC 5789 defined PATCH in March 2010.
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+GET /ip HTTP/1.1
+*User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+*Host: localhost
+*Accept-Language: en-us
+*Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+HTTP/1.1 200 OK
+Date: Thu, 07 Jul 2016 11:56:23 GMT
+Server: nginx
+Content-Length: 29
+Content-Type: text/plain
+Connection: Closed
+
+Your IP address is 127.0.0.1.
+```
+]
+
+.col[
+1. Method, path, protocol/version
+2. Headers (key-value pairs)
+]
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+GET /ip HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Host: localhost
+Accept-Language: en-us
+Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+HTTP/1.1 200 OK
+Date: Thu, 07 Jul 2016 11:56:23 GMT
+Server: nginx
+Content-Length: 29
+Content-Type: text/plain
+Connection: Closed
+
+Your IP address is 127.0.0.1.
+```
+]
+
+.col[
+1. Method, path, protocol/version
+2. Headers (key-value pairs)
+3. Optional document (or "body")
+]
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+GET /ip HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Host: localhost
+Accept-Language: en-us
+Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+*HTTP/1.1 200 OK
+Date: Thu, 07 Jul 2016 11:56:23 GMT
+Server: nginx
+Content-Length: 29
+Content-Type: text/plain
+Connection: Closed
+
+Your IP address is 127.0.0.1.
+```
+]
+
+.col[
+1. Method, path, protocol/version
+2. Headers (key-value pairs)
+3. Optional document (or "body")
+]
+
+.col[
+1. Protocol/version, status code, reason phrase
+]
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+GET /ip HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Host: localhost
+Accept-Language: en-us
+Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+HTTP/1.1 200 OK
+*Date: Thu, 07 Jul 2016 11:56:23 GMT
+*Server: nginx
+*Content-Length: 29
+*Content-Type: text/plain
+*Connection: Closed
+
+Your IP address is 127.0.0.1.
+```
+]
+
+.col[
+1. Method, path, protocol/version
+2. Headers (key-value pairs)
+3. Optional document (or "body")
+]
+
+.col[
+1. Protocol/version, status code, reason phrase
+2. Headers (key-value pairs)
+]
+
+---
+
+.col.marginfix[
+### Request
+
+```http
+GET /ip HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Host: localhost
+Accept-Language: en-us
+Connection: Keep-Alive
+```
+]
+
+.col.marginfix[
+### Response
+
+```http
+HTTP/1.1 200 OK
+Date: Thu, 07 Jul 2016 11:56:23 GMT
+Server: nginx
+Content-Length: 29
+Content-Type: text/plain
+Connection: Closed
+
+*Your IP address is 127.0.0.1.
+```
+]
+
+.col[
+1. Method, path, protocol/version
+2. Headers (key-value pairs)
+3. Optional document (or "body")
+]
+
+.col[
+1. Protocol/version, status code, reason phrase
+2. Headers (key-value pairs)
+3. Optional document (or "body")
+]
+
+---
+
+layout: false
+
+## Alternatives to PSGI
+
+- CGI
+- mod_perl
+- FastCGI
+- SCGI
+- WSGI
+- JSGI
+- Rack
+- ISAPI
+- many more...
+
+
+???
+- All of these still exist, and actually all of these are still in common use.
+- We're going to take a closer look at three of these.
+
+---
+
+## Alternatives to PSGI
+
+- .highlight[CGI]
+- .highlight[mod_perl]
+- .highlight[FastCGI]
+- SCGI
+- WSGI
+- JSGI
+- Rack
+- ISAPI
+- many more...
+
+---
+
+class:  cgi
+layout: true
+
+.top-right[
+![CGI](img/cgi.gif)
+]
+
+## CGI
+
+---
+
+### **C**ommon **G**ateway **I**nterface
+
+--
+- Created by the NCSA in 1993.
+
+???
+- NCSA = National Center for Supercomputing Applications
+
+--
+- More formally defined in [RFC 3875](https://tools.ietf.org/html/rfc3875) ("CGI Version 1.1") in October 2004.
+
+---
+
+```perl
+my $client_ip = $ENV{'REMOTE_ADDR'};
+
+print "Content-Type: text/plain\n";
+print "Status: 200 OK\n";
+
+print "\n";
+print "Your IP address is ${client_ip}.";
+```
+
+---
+
+```perl
+*my $client_ip = $ENV{'REMOTE_ADDR'};
+
+print "Content-Type: text/plain\n";
+print "Status: 200 OK\n";
+
+print "\n";
+print "Your IP address is ${client_ip}.";
+```
+
+1. Gateway sets information about the request in the environment.
+
+.condensed.marginfix[
+.col[
+- `AUTH_TYPE`
+- `CONTENT_LENGTH`
+- `CONTENT_TYPE`
+- `GATEWAY_INTERFACE`
+- `PATH_INFO`
+- `PATH_TRANSLATED`
+- `QUERY_STRING`
+- `REMOTE_ADDR`
+- `REMOTE_HOST`
+]
+.col[
+- `REMOTE_IDENT`
+- `REMOTE_USER`
+- `REQUEST_METHOD`
+- `SCRIPT_NAME`
+- `SERVER_NAME`
+- `SERVER_PORT`
+- `SERVER_PROTOCOL`
+- `SERVER_SOFTWARE`
+- other "protocol-specific" variables
+]
+]
+
+???
+- In Perl, you can get these using %ENV.
+- Or getenv from stdlib.
+- If you've done some web programming before, you're probably familiar with at least a few of these.
+
+---
+
+```perl
+my $client_ip = $ENV{'REMOTE_ADDR'};
+
+*print "Content-Type: text/plain\n";
+*print "Status: 200 OK\n";
+
+print "\n";
+print "Your IP address is ${client_ip}.";
+```
+
+1. Gateway sets information about the request in the environment.
+2. Print response headers to `STDOUT`.
+
+.condensed.marginfix[
+.col[
+- `Content-Type`
+- `Location`
+- `Status`
+- other "protocol-specific" header fields
+]
+]
+
+---
+
+```perl
+my $client_ip = $ENV{'REMOTE_ADDR'};
+
+print "Content-Type: text/plain\n";
+print "Status: 200 OK\n";
+
+*print "\n";
+print "Your IP address is ${client_ip}.";
+```
+
+1. Gateway sets information about the request in the environment.
+2. Print response headers to `STDOUT`.
+3. Print newline.
+
+---
+
+```perl
+my $client_ip = $ENV{'REMOTE_ADDR'};
+
+print "Content-Type: text/plain\n";
+print "Status: 200 OK\n";
+
+print "\n";
+*print "Your IP address is ${client_ip}.";
+```
+
+1. Gateway sets information about the request in the environment.
+2. Print response headers to `STDOUT`.
+3. Print newline.
+4. Print response document (if any).
+
+---
+
+```perl
+my $client_ip = $ENV{'REMOTE_ADDR'};
+
+print "Content-Type: text/plain\n";
+print "Status: 200 OK\n";
+
+print "\n";
+print "Your IP address is ${client_ip}.";
+```
+
+1. Gateway sets information about the request in the environment.
+2. Print response headers to `STDOUT`.
+3. Print newline.
+4. Print response document (if any).
+5. Read request document from `STDIN` (if any).
+
+???
+- CGI.pm helps cut down boilerplate by helping parse things like `QUERY_STRING` and `HTTP_COOKIE`,
+  producing correctly-formatted headers, and even producing HTML.
+- CGI.pm was deprecated in perl 5.20 and remove from core in perl 5.22.
+
+Good:
+- Conceptually simple.
+- Only requires the use of the most basic and primitive program constructs (stdin, stdout, env).
+- Only other primitive construct that could have been used is that of passing program arguments.
+  - Actually, the spec does specify behavior for "search-strings" as program arguments.
+
+Bad:
+- Details can get complicated.
+- Although the de facto standard for years, modern web servers are choosing to not support it
+  directly any longer.
+- There is too much overhead in forking and execing.
+
+---
+
+class:  fastcgi
+layout: true
+
+.top-right[
+![FastCGI](img/fastcgi.png)
+]
+
+## FastCGI
+
+---
+
+### a low-overhead variation on CGI
+
+--
+- Binary protocol with support for pipelining and multiplexing.
+
+--
+- Open Market wrote the [specification](http://www.mit.edu/~yandros/doc/specs/fcgi-spec.html) on 29 Apr 1996.
+
+???
+- Open Market was an ecommerce startup based in Massachusetts.
+  - Developed one of the first HTTP servers.
+
+---
+
+```perl
+use FCGI;
+
+my $request = FCGI::Request();
+
+while (0 <= $request->Accept()) {
+    my $client_ip = $ENV{'REMOTE_ADDR'};
+
+    print "Content-Type: text/html\n\n";
+    print "Your IP address is ${client_ip}.";
+}
+```
+
+---
+
+```perl
+*use FCGI;
+*
+*my $request = FCGI::Request();
+
+while (0 <= $request->Accept()) {
+    my $client_ip = $ENV{'REMOTE_ADDR'};
+
+    print "Content-Type: text/html\n\n";
+    print "Your IP address is ${client_ip}.";
+}
+```
+
+1. Use `FCGI` and instantiate an object.
+
+---
+
+```perl
+use FCGI;
+
+my $request = FCGI::Request();
+
+*while (0 <= $request->Accept()) {
+    my $client_ip = $ENV{'REMOTE_ADDR'};
+
+    print "Content-Type: text/html\n\n";
+    print "Your IP address is ${client_ip}.";
+}
+```
+
+1. Use `FCGI` and instantiate an object.
+2. Loop on `Accept()` which blocks until the next request is received.
+
+---
+
+```perl
+use FCGI;
+
+my $request = FCGI::Request();
+
+while (0 <= $request->Accept()) {
+*   my $client_ip = $ENV{'REMOTE_ADDR'};
+*
+*   print "Content-Type: text/html\n\n";
+*   print "Your IP address is ${client_ip}.";
+}
+```
+
+1. Use `FCGI` and instantiate an object.
+2. Loop on `Accept()` which blocks until the next request is received.
+3. Otherwise appears similar to a CGI program.
+
+---
+
+```perl
+use FCGI;
+
+my $request = FCGI::Request();
+
+while (0 <= $request->Accept()) {
+    my $client_ip = $ENV{'REMOTE_ADDR'};
+
+    print "Content-Type: text/html\n\n";
+    print "Your IP address is ${client_ip}.";
+}
+```
+
+1. Use `FCGI` and instantiate an object.
+2. Loop on `Accept()` which blocks until the next request is received.
+3. Otherwise appears similar to a CGI program.
+
+* IPC actually happens over a socket!
+
+???
+- Can be run unmodified as a CGI script by detecting that stdin is not a socket.
+- Can read from stdin and write to stdout via the miracle of tied filehandles.
+
+---
+
+class:  mod_perl
+layout: true
+
+.top-right[
+![mod_perl](img/mod_perl.gif)
+]
+
+## mod_perl
+
+---
+
+--
+- First released on March 25, 1996.
+
+???
+- Unlike the interfaces we have examined so far, mod_perl is code.
+- About the same time as FastCGI.
+
+--
+- Became an Apache Software Foundation project at ApacheCon 1999 in Orlando.
+
+--
+
+```perl
+package GetIP;
+
+use Apache::RequestRec ();
+use Apache::Connection ();
+use Apache::Const -compile => qw(OK);
+
+sub handler {
+    my $r = shift;
+    my $client_ip = $r->connection->remote_addr;
+
+    $r->content_type('text/plain');
+    $r->print("Your IP address is ${client_ip}.");
+    return Apache::Const::OK;
+}
+
+1;
+```
+
+???
+- Notice how we're not using STDOUT (or even pretending to).
+- This program actually runs on a perl interpreter inside the web server.
+- It also has access to more information through the exposed API.
+
+Good:
+- Can run CGI programs as-is.
+
+Bad:
+- Can tie you to specific web servers.
+  - There's a separate mod_perl for nginx.
+- Code runs in the same process as the HTTP server -- kinda scary.
+- Using Apache's API feels heavy.
+
+---
+
+class:  psgi
+layout: true
+
+## PSGI
+
+---
+
+```perl
+my $app = sub {
+    my $env = shift;
+    my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+        '200',
+        [ 'Content-Type' => 'text/plain' ],
+        [ "Your IP address is ${client_id}." ],     # or IO::Handle-like object
+    ];
+};
+```
+
+???
+- I think it's good to understand CGI et al. so that you can understand why it was designed the way
+  it was.
+- Hopefully the ideas behind PSGI are based off of the best that CGI et al. had to offer without any
+  of the drawbacks.
+
+
+- Notice how the program is a subroutine.
+- By being a subrouting rather than a script that is executed, we're already in a form that can be
+  called repeatedly without incurring fork-exec overhead. Nice!
+
+---
+
+```perl
+my $app = sub {
+*   my $env = shift;
+*   my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+        '200',
+        [ 'Content-Type' => 'text/plain' ],
+        [ "Your IP address is ${client_id}." ],     # or IO::Handle-like object
+    ];
+};
+```
+
+.col[
+### Request
+
+1. Hashref of request information.
+]
+
+???
+- Oh, look! The variable is the same as is specified by CGI.
+  - Why throw away over a decade of convention?
+
+---
+
+```perl
+my $app = sub {
+    my $env = shift;
+    my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+*       '200',
+        [ 'Content-Type' => 'text/plain' ],
+        [ "Your IP address is ${client_id}." ],     # or IO::Handle-like object
+    ];
+};
+```
+
+.col[
+### Request
+
+1. Hashref of request information.
+]
+
+.col[
+### Response
+
+1. HTTP status code.
+]
+
+???
+- Then you'll notice that instead of printing anything, we return an arrayref as the response.
+
+---
+
+```perl
+my $app = sub {
+    my $env = shift;
+    my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+        '200',
+*       [ 'Content-Type' => 'text/plain' ],
+        [ "Your IP address is ${client_id}." ],     # or IO::Handle-like object
+    ];
+};
+```
+
+.col[
+### Request
+
+1. Hashref of request information.
+]
+
+.col[
+### Response
+
+1. HTTP status code.
+2. Arrayref of response headers.
+]
+
+???
+- Why not a hashref?
+  - To support multiple headers (e.g. Set-Cookie)
+  - It more closely resembles how the WSGI folks did it (i.e. list of tuples).
+
+---
+
+```perl
+my $app = sub {
+    my $env = shift;
+    my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+        '200',
+        [ 'Content-Type' => 'text/plain' ],
+*       [ "Your IP address is ${client_id}." ],     # or IO::Handle-like object
+    ];
+};
+```
+
+.col[
+### Request
+
+1. Hashref of request information.
+]
+
+.col[
+### Response
+
+1. HTTP status code.
+2. Arrayref of response headers.
+3. Response document.
+]
+
+???
+- Body may be a list of chunks that are concatenated together or a handle to read from.
+
+---
+
+class:  env
+layout: true
+
+## PSGI Environment
+
+---
+
+.condensed.marginfix[
+.col[
+- `HTTP_ACCEPT`
+- `HTTP_ACCEPT_ENCODING`
+- `HTTP_ACCEPT_LANGUAGE`
+- `HTTP_CACHE_CONTROL`
+- `HTTP_CONNECTION`
+- `HTTP_DNT`
+- `HTTP_HOST`
+- `HTTP_USER_AGENT`
+- `PATH_INFO`
+- `QUERY_STRING `
+- `REMOTE_ADDR`
+- `REMOTE_PORT`
+- `REQUEST_METHOD`
+- `REQUEST_URI`
+- `SCRIPT_NAME`
+]
+.col[
+- `SERVER_NAME`
+- `SERVER_PORT`
+- `SERVER_PROTOCOL`
+- `psgi.errors`
+- `psgi.input`
+- `psgi.multiprocess`
+- `psgi.multithread`
+- `psgi.nonblocking`
+- `psgi.run_once`
+- `psgi.streaming`
+- `psgi.url_scheme`
+- `psgi.version`
+- `psgix.harakiri`
+- `psgix.input.buffered`
+- `psgix.io`
+]
+]
+
+---
+
+.condensed.marginfix[
+.col[
+- .highlight[`HTTP_ACCEPT`]
+- .highlight[`HTTP_ACCEPT_ENCODING`]
+- .highlight[`HTTP_ACCEPT_LANGUAGE`]
+- .highlight[`HTTP_CACHE_CONTROL`]
+- .highlight[`HTTP_CONNECTION`]
+- .highlight[`HTTP_DNT`]
+- .highlight[`HTTP_HOST`]
+- .highlight[`HTTP_USER_AGENT`]
+- .highlight[`PATH_INFO`]
+- .highlight[`QUERY_STRING `]
+- .highlight[`REMOTE_ADDR`]
+- .highlight[`REMOTE_PORT`]
+- .highlight[`REQUEST_METHOD`]
+- .highlight[`REQUEST_URI`]
+- .highlight[`SCRIPT_NAME`]
+]
+.col[
+- .highlight[`SERVER_NAME`]
+- .highlight[`SERVER_PORT`]
+- .highlight[`SERVER_PROTOCOL`]
+- `psgi.errors`
+- `psgi.input`
+- `psgi.multiprocess`
+- `psgi.multithread`
+- `psgi.nonblocking`
+- `psgi.run_once`
+- `psgi.streaming`
+- `psgi.url_scheme`
+- `psgi.version`
+- `psgix.harakiri`
+- `psgix.input.buffered`
+- `psgix.io`
+]
+]
+
+---
+
+.condensed.marginfix[
+.col[
+- `HTTP_ACCEPT`
+- `HTTP_ACCEPT_ENCODING`
+- `HTTP_ACCEPT_LANGUAGE`
+- `HTTP_CACHE_CONTROL`
+- `HTTP_CONNECTION`
+- `HTTP_DNT`
+- `HTTP_HOST`
+- `HTTP_USER_AGENT`
+- `PATH_INFO`
+- `QUERY_STRING `
+- `REMOTE_ADDR`
+- `REMOTE_PORT`
+- `REQUEST_METHOD`
+- `REQUEST_URI`
+- `SCRIPT_NAME`
+]
+.col[
+- `SERVER_NAME`
+- `SERVER_PORT`
+- `SERVER_PROTOCOL`
+- .highlight[`psgi.errors`]
+- .highlight[`psgi.input`]
+- .highlight[`psgi.multiprocess`]
+- .highlight[`psgi.multithread`]
+- .highlight[`psgi.nonblocking`]
+- .highlight[`psgi.run_once`]
+- .highlight[`psgi.streaming`]
+- .highlight[`psgi.url_scheme`]
+- .highlight[`psgi.version`]
+- .highlight[`psgix.harakiri`]
+- .highlight[`psgix.input.buffered`]
+- .highlight[`psgix.io`]
+]
+]
+
+???
+- Harakiri is a form of Japanese ritual suicide by disembowelment.
+
+---
+
+layout: false
+
+## Benefits of PSGI
+
+- Everything is a data structure (almost).
+
+???
+- Makes it easier to write tests because mocking either the app or server is clear.
+- Don't necessarily need to parse a bytestream to check stuff.
+
+--
+- No global data or shared IO handles.
+
+???
+- This lets you service multiple requests asynchronously in the same process/thread.
+
+--
+- Takes deployment details out of web frameworks.
+
+???
+- Web frameworks only need to target PSGI.
+- No need to worry about the boring stuff; they can focus on the abstractions that make them unique
+  and useful.
+
+--
+- End-users of your app have many deployment options for free.
+
+---
+
+## Web Frameworks
+
+- [Catalyst](http://www.catalystframework.org/)
+- [Mojolicious](http://mojolicious.org/)
+- [Dancer](http://perldancer.org/)
+- [CGI::Application](http://cgi-app.org/)
+- [CGI::Ex](https://github.com/chazmcgarvey/CGI-Ex/tree/psgi-2)
+- [Web::Simple](https://metacpan.org/pod/Web::Simple)
+- [Amon2](https://metacpan.org/pod/Amon2)
+- [Poet](https://metacpan.org/pod/Poet)
+- [Kelp](https://metacpan.org/pod/Kelp)
+- [Raisin](https://metacpan.org/pod/Raisin)
+- many more...
+
+---
+
+class: plack
+
+## Plack
+
+- Provides tools for building, running, and testing PSGI apps.
+
+--
+  - [Plack::Handler](https://metacpan.org/pod/Plack::Handler)
+
+???
+- Connects PSGI apps and web servers.
+  - Takes a request from the server,
+  - converts it to the PSGI-specified environment,
+  - runs your app,
+  - converts the response back to a format the server understands.
+
+--
+  - [Plack::Loader](https://metacpan.org/pod/Plack::Loader)
+
+???
+- Picks an appropriate Plack::Handler (based on ENV, loaded modules, or arguments) and loads it.
+- Can also do stuff like restart the loader when files change.
+
+--
+  - [Plack::Runner](https://metacpan.org/pod/Plack::Runner), [plackup](https://metacpan.org/pod/plackup)
+
+???
+- Run PSGI apps from the command-line.
+
+--
+  - [Plack::Middleware](https://metacpan.org/pod/Plack::Middleware)
+
+???
+- Create subroutines that run between the handler and your app.
+- Can alter the request your app receives and modify the response your app returns.
+
+--
+  - [Plack::Request](https://metacpan.org/pod/Plack::Request), [Plack::Response](https://metacpan.org/pod/Plack::Response)
+
+???
+- Request and response wrappers can help simplify writing middleware.
+
+--
+  - [Plack::Builder](https://metacpan.org/pod/Plack::Builder)
+
+???
+- Provides DSL for composing apps and middleware.
+
+--
+  - [Plack::Test](https://metacpan.org/pod/Plack::Test), [Plack::Test::Suite](https://metacpan.org/pod/Plack::Test::Suite)
+
+???
+- Use Plack::Test for testing apps.
+- Plack::Test::Suite is a series of tests for testing handlers.
+
+--
+  - [Plack::Util](https://metacpan.org/pod/Plack::Util)
+
+???
+- Provides random useful stuff for handler and middleware developers.
+- Stuff like determing the length of a document or getting PSGI response headers from the arrayref.
+
+---
+
+class: plackup
+
+## plackup
+
+- Run PSGI apps from the command-line.
+
+```sh
+# read your app from app.psgi file
+plackup
+ 
+# choose .psgi file from ARGV[0] (or with -a option)
+plackup hello.psgi
+ 
+# switch server implementation with --server (or -s)
+plackup --server HTTP::Server::Simple --port 9090 --host 127.0.0.1 test.psgi
+ 
+# use UNIX socket to run FCGI daemon
+plackup -s FCGI --listen /tmp/fcgi.sock myapp.psgi
+ 
+# launch FCGI external server on port 9090
+plackup -s FCGI --port 9090
+```
+
+---
+
+class:  app-psgi
+layout: true
+
+## app.psgi
+
+---
+
+```perl
+#!/usr/bin/env perl
+
+my $app = sub {
+    my $env = shift;
+    my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+        '200',
+        [ 'Content-Type' => 'text/plain' ],
+        [ "Your IP address is ${client_id}." ],
+    ];
+};
+```
+
+---
+
+```perl
+#!/usr/bin/env perl
+
+*use Plack::Builder;
+
+my $app = sub {
+    my $env = shift;
+    my $client_id = $env->{'REMOTE_ADDR'};
+
+    return [
+        '200',
+        [ 'Content-Type' => 'text/plain' ],
+        [ "Your IP address is ${client_id}." ],
+    ];
+};
+
+*builder {
+*   enable 'Runtime';
+*   mount '/' => $app;
+*};
+```
+
+???
+- The `Runtime` middleware adds an `X-Runtime` header to the response with the number of seconds it
+  took to process the request.
+
+---
+
+layout: false
+
+## Plack Handlers
+
+- Can be found on the CPAN in the `Plack::Handler::` namespace.
+  - [Apache1](https://metacpan.org/pod/Plack::Handler::Apache1), [Apache2](https://metacpan.org/pod/Plack::Handler::Apache2)
+  - [CGI](https://metacpan.org/pod/Plack::Handler::CGI)
+  - [FCGI](https://metacpan.org/pod/Plack::Handler::FCGI)
+  - [HTTP::Server::PSGI](https://metacpan.org/pod/Plack::Handler::HTTP::Server::PSGI)
+  - [SCGI](https://metacpan.org/pod/Plack::Handler::SCGI)
+  - [Starman](https://metacpan.org/pod/Plack::Handler::Starman)
+  - [Twiggy](https://metacpan.org/pod/Plack::Handler::Twiggy)
+  - [AnyEvent::HTTPD](https://metacpan.org/pod/Plack::Handler::AnyEvent::HTTPD)
+  - [Thrall](https://metacpan.org/pod/Plack::Handler::Thrall)
+  - many more...
+
+---
+
+class:  middleware
+layout: true
+
+## Plack Middleware
+
+---
+
+name:   middleware-debug
+
+### [`Debug`](https://metacpan.org/pod/Plack::Middleware::Debug)
+
+```perl
+enable 'Debug';
+```
+
+---
+
+### [`ReverseProxy`](https://metacpan.org/pod/Plack::Middleware::ReverseProxy)
+
+```perl
+enable 'ReverseProxy';
+```
+
+- Fixes `REMOTE_ADDR`, `HTTP_HOST`, `SERVER_PORT`, and `psgi.url_scheme` in the environment.
+
+---
+
+### [`LogDispatch`](https://metacpan.org/pod/Plack::Middleware::LogDispatch)
+
+```perl
+use Log::Dispatch;
+
+my $logger = Log::Dispatch->new(
+    outputs => [
+        [
+            'Syslog',
+            min_level   => 'debug',
+            ident       => 'myapp',
+        ],
+    ],
+);
+
+enable 'LogDispatch', logger => $logger;
+```
+
+---
+
+### [`XSRFBlock`](https://metacpan.org/pod/Plack::Middleware::XSRFBlock)
+
+```perl
+enable 'XSRFBlock', cookie_options => { httponly => 1 };
+```
+
+- Blocking cross-site request forgery couldn't be easier.
+
+---
+
+### [`RedirectSSL`](https://metacpan.org/pod/Plack::Middleware::RedirectSSL)
+
+```perl
+enable 'RedirectSSL';
+```
+
+- Redirects from http to https (or backwards, if configured).
+- Can also set HSTS header with configurable `max-age`. 
+
+???
+- HSTS = HTTP Strict Transport Security
+
+---
+
+layout: false
+
+.top-right[
+![CPAN](img/cpan.png)
+]
+
+## Plack modules in July 2016
+
+**10** `Plack-Handler-*` distributions
+
+**55** `Plack-App-*` distributions
+
+**253** `Plack-Middleware-*` distributions
+
+---
+
+## Parting Thoughts
+
+- PSGI also specifies a way to delay or stream responses to the server.
+
+???
+- It's kind of complicated, but you can read the spec to learn more.
+- Read the source code of various apps and middlewares to see how it works in practice.
+
+--
+- There are tons of great apps and middleware on the CPAN.
+
+--
+- Consider writing some of your app as a middleware.
+
+???
+- The concept and implementation of middleware is cool.
+- You should consider writing parts of your app as middleware so that functionality is available
+  under different web frameworks.
+- Stuff that makes sense as middleware:
+  - Auth mechanisms
+  - Logging
+  - Error handling
+  - Sessions
+  - Rate limiters
+
+---
+
+class:  center, middle
+name:   conclusion
+
+## Conclusion:
+
+### Understand PSGI & Plack, and use them!
+
+---
+
+class:  center, middle
+layout: false
+name:   questions
+
+## Questions?
+
+---
+
+class:  center, middle
+name:   last
+
+.col.sep[
+## Thank you
+
+Email me: Charles McGarvey
+<chazmcgarvey@brokenzipper.com>
+
+.talkqr.center[
+Leave me feedback, if you want:
+
+![Page on Joind.in](img/talkqr.svg)
+
+<https://joind.in/talk/6e4d2>
+]
+]
+
+.col[
+## Credits
+
+.left[
+- Thank you [Tatsuhiko Miyagawa](http://weblog.bulknews.net/) and other contributors for creating PSGI and Plack.
+]
+]
+
+</textarea><script src="remark.min.js"></script><script>var slideshow = remark.create({countIncrementalSlides: true, highlightLanguage: 'perl', highlightLines: true, ratio: '16:9', /*slideNumberFormat: '',*/ navigation: {scroll: false, touch: false, click: false}})</script><script src="js/common.js"></script><script src="js/slides.js"></script></body></html>
+<!-- vim: set ts=4 sts=4 sw=4 tw=120 et ft=markdown nowrap: -->
